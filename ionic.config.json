@@ -1,0 +1,7 @@
+{
+  "name": "AlexAufgabenRad",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
