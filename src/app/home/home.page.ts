@@ -14,27 +14,41 @@ export class HomePage {
     { title: 'Collect 5 phone numbers', completed: false },
   ];
 
+  sliceDegree: number = 0; // Winkel jedes Kuchenstücks
+  rotation: number = 0; // Aktuelle Rotation des Rads
+  currentRotation: number = 0; // Letzter Rotationsstatus
+  isSpinning = false;
   selectedMission: any = null;
 
-  constructor() { }
+  constructor() {
+    this.sliceDegree = 360 / this.missions.length; // Gleichmäßige Verteilung der Missionen
+  }
 
-  // Methode zum Überprüfen, ob alle Missionen abgeschlossen sind
+  // Überprüfen, ob alle Missionen abgeschlossen sind
   allMissionsCompleted(): boolean {
     return this.missions.every((mission) => mission.completed);
   }
 
-  // Methode, um das Rad zu drehen
+  // Funktion zum Drehen des Rads
   spinWheel() {
-    const availableMissions = this.missions.filter((mission) => !mission.completed);
-    if (availableMissions.length > 0) {
-      const randomIndex = Math.floor(Math.random() * availableMissions.length);
-      this.selectedMission = availableMissions[randomIndex];
-    } else {
-      this.selectedMission = null;
-    }
+    if (this.isSpinning) return;
+
+    this.isSpinning = true;
+
+    const spins = 5; // Anzahl der vollen Umdrehungen
+    const randomSlice = Math.floor(Math.random() * this.missions.length); // Zufällige Mission auswählen
+    const randomDegree = spins * 360 + randomSlice * this.sliceDegree; // Berechnung der Gesamtrotation
+    this.rotation = this.currentRotation + randomDegree; // Zur bisherigen Rotation hinzufügen
+
+    setTimeout(() => {
+      const selectedIndex = Math.floor(((360 - (this.rotation % 360)) / this.sliceDegree) % this.missions.length);
+      this.selectedMission = this.missions[selectedIndex];
+      this.currentRotation = this.rotation % 360; // Letzte Rotation speichern
+      this.isSpinning = false;
+    }, 4000); // Stoppe nach 4 Sekunden
   }
 
-  // Methode, um eine Mission zu markieren
+  // Markiere Mission als erfolgreich oder nicht erfolgreich
   markMission(successful: boolean) {
     if (successful && this.selectedMission) {
       const index = this.missions.findIndex(
@@ -47,5 +61,3 @@ export class HomePage {
     this.selectedMission = null;
   }
 }
-
-

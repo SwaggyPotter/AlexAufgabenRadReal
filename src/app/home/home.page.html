@@ -11,8 +11,24 @@
     </ion-toolbar>
   </ion-header>
 
-  <div class="wheel-container" *ngIf="!selectedMission">
+  <div class="wheel-container">
+    <!-- Rad -->
+    <div class="wheel" [style.transform]="'rotate(' + rotation + 'deg)'">
+      <div class="wheel-item" *ngFor="let mission of missions; let i = index"
+        [style.transform]="'rotate(' + i * sliceDegree + 'deg)'">
+        <span [style.transform]="'rotate(-' + i * sliceDegree + 'deg)'">
+          {{ mission.title }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Zeiger -->
+    <div class="pointer"></div>
+
+    <!-- Button zum Starten -->
     <ion-button expand="block" color="primary" (click)="spinWheel()">Spin the Wheel</ion-button>
+
+    <!-- Nachricht für abgeschlossene Missionen -->
     <div *ngIf="allMissionsCompleted()">
       <p>Alle Missionen abgeschlossen! 🎉</p>
     </div>
@@ -21,8 +37,12 @@
   <div *ngIf="selectedMission" class="mission-container">
     <h2>Mission:</h2>
     <p>{{ selectedMission.title }}</p>
-    <ion-button expand="block" color="success" (click)="markMission(true)">Erfolgreich</ion-button>
-    <ion-button expand="block" color="danger" (click)="markMission(false)">Nicht erfolgreich</ion-button>
+    <ion-button expand="block" color="success" (click)="markMission(true)">
+      Erfolgreich
+    </ion-button>
+    <ion-button expand="block" color="danger" (click)="markMission(false)">
+      Nicht erfolgreich
+    </ion-button>
   </div>
 
   <ion-list>
