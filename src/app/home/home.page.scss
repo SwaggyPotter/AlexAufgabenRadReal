@@ -109,3 +109,27 @@ canvas {
 .dialog button:hover {
   opacity: 0.9;
 }
+
+.prizes {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.prizes ul {
+  list-style: none;
+  padding: 0;
+  text-align: center;
+}
+
+.prizes li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.prizes li .taken {
+  margin-left: 10px;
+  color: green;
+  font-size: 18px;
+}

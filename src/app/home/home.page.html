@@ -18,6 +18,15 @@
     <div class="winner" *ngIf="winner">
       Gewonnen: <span>{{ winner }}</span>
     </div>
+    <!-- Preise-Anzeige -->
+    <div class="prizes">
+      <ul>
+        <li *ngFor="let prize of allPrizes">
+          <span>{{ prize.name }}</span>
+          <span *ngIf="prize.taken" class="taken">✔️</span>
+        </li>
+      </ul>
+    </div>
     <!-- Dialog für die Entscheidung -->
     <div class="dialog" *ngIf="showDialog">
       <p>Möchtest du den Preis <strong>{{ winner }}</strong> annehmen?</p>
@@ -25,4 +34,5 @@
       <button (click)="declinePrize()">Nein</button>
     </div>
   </div>
+
 </ion-content>

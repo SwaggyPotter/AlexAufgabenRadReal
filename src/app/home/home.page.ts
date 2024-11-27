@@ -8,36 +8,51 @@ import { Component, AfterViewInit } from '@angular/core';
 export class HomePage implements AfterViewInit {
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
-  private segments: string[] = ['Preis 1', 'Preis 2', 'Preis 3', 'Preis 4'];
   private startAngle: number = 0;
-  private arc: number = Math.PI / (this.segments.length / 2);
   private spinTimeout: any = null;
   private spinAngleStart: number = 10;
   private spinTime: number = 0;
   private spinTimeTotal: number = 0;
 
-  // Gewinner und Zustände
+  // Preise und Gewinner
+  allPrizes: { name: string; taken: boolean }[] = [
+    { name: 'Preis 1', taken: false },
+    { name: 'Preis 2', taken: false },
+    { name: 'Preis 3', taken: false },
+    { name: 'Preis 4', taken: false },
+  ];
+  segments: string[] = this.allPrizes.map(prize => prize.name);
+  arc: number = Math.PI / (this.segments.length / 2);
   winner: string | null = null;
+
+  // Zustände
   isSpinning: boolean = false;
   showDialog: boolean = false;
 
   ngAfterViewInit(): void {
     this.canvas = document.getElementById('wheel') as HTMLCanvasElement;
-    this.ctx = this.canvas!.getContext('2d');
-    if (this.ctx) {
-      this.drawWheel();
+    if (!this.canvas) {
+      console.error('Canvas-Element nicht gefunden.');
+      return;
     }
+    this.ctx = this.canvas.getContext('2d');
+    if (!this.ctx) {
+      console.error('2D-Kontext konnte nicht erstellt werden.');
+      return;
+    }
+    this.drawWheel();
   }
 
   private drawWheel(): void {
-    if (!this.ctx) return;
+    if (!this.ctx || this.segments.length === 0) return;
 
     const outsideRadius = 140;
     const textRadius = 120;
     const insideRadius = 100;
 
-    this.canvas = document.getElementById('wheel')! as HTMLCanvasElement;
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.canvas && this.ctx) {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
 
     for (let i = 0; i < this.segments.length; i++) {
       const angle = this.startAngle + i * this.arc;
@@ -46,7 +61,7 @@ export class HomePage implements AfterViewInit {
       // Außenbereich des Segments zeichnen
       this.ctx.beginPath();
       this.ctx.arc(150, 150, outsideRadius, angle, angle + this.arc, false);
-      this.ctx.arc(150, 150, insideRadius, angle + this.arc, angle, true); // Hier angepasst
+      this.ctx.arc(150, 150, insideRadius, angle + this.arc, angle, true);
       this.ctx.fill();
 
       // Text zeichnen
@@ -62,7 +77,6 @@ export class HomePage implements AfterViewInit {
       this.ctx.restore();
     }
   }
-
 
   private getColor(item: number, maxItem: number): string {
     const hue = (item / maxItem) * 360;
@@ -108,6 +122,10 @@ export class HomePage implements AfterViewInit {
 
   acceptPrize(): void {
     if (this.winner) {
+      // Gewinner als "genommen" markieren
+      const prize = this.allPrizes.find(prize => prize.name === this.winner);
+      if (prize) prize.taken = true;
+
       // Gewinner aus den Segmenten entfernen
       this.segments = this.segments.filter(segment => segment !== this.winner);
 
@@ -119,7 +137,6 @@ export class HomePage implements AfterViewInit {
       this.drawWheel(); // Rad neu zeichnen
     }
   }
-
 
   declinePrize(): void {
     this.winner = null; // Gewinner zurücksetzen
