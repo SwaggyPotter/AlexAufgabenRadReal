@@ -56,10 +56,12 @@ export class HomePage {
     }
   }
 
+
   private getColor(item: number, maxItem: number): string {
     const hue = (item / maxItem) * 360;
     return `hsl(${hue}, 100%, 50%)`;
   }
+
 
   spin(): void {
     this.spinAngleStart = Math.random() * 10 + 10;
@@ -67,6 +69,7 @@ export class HomePage {
     this.spinTimeTotal = Math.random() * 3000 + 4000;
     this.rotateWheel();
   }
+
 
   private rotateWheel(): void {
     this.spinTime += 30;
@@ -84,6 +87,7 @@ export class HomePage {
     this.spinTimeout = setTimeout(() => this.rotateWheel(), 30);
   }
 
+
   private stopRotateWheel(): void {
     clearTimeout(this.spinTimeout);
     const degrees = (this.startAngle * 180) / Math.PI + 90;
@@ -92,6 +96,7 @@ export class HomePage {
     const winningSegment = this.segments[index];
     alert(`Gewonnen: ${winningSegment}`);
   }
+
 
   private easeOut(t: number, b: number, c: number, d: number): number {
     const ts = (t /= d) * t;

@@ -7,7 +7,11 @@
 <ion-content [fullscreen]="true">
   <div class="container">
     <div class="wheel-container">
+      <!-- Zeiger -->
+      <div class="pointer"></div>
+      <!-- Canvas für das Rad -->
       <canvas id="wheel" width="300" height="300"></canvas>
+      <!-- Spin-Button -->
       <button class="spin-button" (click)="spin()">Drehen</button>
     </div>
   </div>

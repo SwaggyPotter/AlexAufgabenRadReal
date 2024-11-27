@@ -3,13 +3,43 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
+  /* Vollständige Höhe des Viewports */
   background-color: #f4f4f4;
 }
 
 .wheel-container {
   position: relative;
-  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pointer {
+  position: absolute;
+  top: calc(50% - 140px);
+  /* Innerhalb des Rads platzieren */
+  left: 50%;
+  /* Horizontal zentrieren */
+  transform: translateX(-50%) rotate(180deg);
+  /* Nach unten ausrichten */
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  /* Linke Kante */
+  border-right: 10px solid transparent;
+  /* Rechte Kante */
+  border-top: 20px solid #ff0000;
+  /* Spitze nach unten */
+  z-index: 10;
+  /* Über dem Rad anzeigen */
+}
+
+
+
+canvas {
+  margin: 20px auto;
+  /* Zentrieren */
 }
 
 .spin-button {
