@@ -6,58 +6,96 @@ import { Component } from '@angular/core';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  missions = [
-    { title: 'Drink a shot', completed: false },
-    { title: 'Dance on a table', completed: false },
-    { title: 'Sing a song', completed: false },
-    { title: 'Take a selfie with a stranger', completed: false },
-    { title: 'Collect 5 phone numbers', completed: false },
-  ];
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private segments: string[] = ['Preis 1', 'Preis 2', 'Preis 3', 'Preis 4'];
+  private startAngle: number = 0;
+  private arc: number = Math.PI / (this.segments.length / 2);
+  private spinTimeout: any = null;
+  private spinAngleStart: number = 10;
+  private spinTime: number = 0;
+  private spinTimeTotal: number = 0;
 
-  sliceDegree: number = 0; // Winkel jedes Kuchenstücks
-  rotation: number = 0; // Aktuelle Rotation des Rads
-  currentRotation: number = 0; // Letzter Rotationsstatus
-  isSpinning = false;
-  selectedMission: any = null;
-
-  constructor() {
-    this.sliceDegree = 360 / this.missions.length; // Gleichmäßige Verteilung der Missionen
-  }
-
-  // Überprüfen, ob alle Missionen abgeschlossen sind
-  allMissionsCompleted(): boolean {
-    return this.missions.every((mission) => mission.completed);
-  }
-
-  // Funktion zum Drehen des Rads
-  spinWheel() {
-    if (this.isSpinning) return;
-
-    this.isSpinning = true;
-
-    const spins = 5; // Anzahl der vollen Umdrehungen
-    const randomSlice = Math.floor(Math.random() * this.missions.length); // Zufällige Mission auswählen
-    const randomDegree = spins * 360 + randomSlice * this.sliceDegree; // Berechnung der Gesamtrotation
-    this.rotation = this.currentRotation + randomDegree; // Zur bisherigen Rotation hinzufügen
-
-    setTimeout(() => {
-      const selectedIndex = Math.floor(((360 - (this.rotation % 360)) / this.sliceDegree) % this.missions.length);
-      this.selectedMission = this.missions[selectedIndex];
-      this.currentRotation = this.rotation % 360; // Letzte Rotation speichern
-      this.isSpinning = false;
-    }, 4000); // Stoppe nach 4 Sekunden
-  }
-
-  // Markiere Mission als erfolgreich oder nicht erfolgreich
-  markMission(successful: boolean) {
-    if (successful && this.selectedMission) {
-      const index = this.missions.findIndex(
-        (mission) => mission.title === this.selectedMission.title
-      );
-      if (index !== -1) {
-        this.missions[index].completed = true;
-      }
+  ngAfterViewInit(): void {
+    this.canvas = document.getElementById('wheel') as HTMLCanvasElement;
+    this.ctx = this.canvas!.getContext('2d');
+    if (this.ctx) {
+      this.drawWheel();
     }
-    this.selectedMission = null;
+  }
+
+
+  private drawWheel(): void {
+    if (!this.ctx) return;
+
+    const outsideRadius = 140;
+    const textRadius = 120;
+    const insideRadius = 100;
+    this.canvas = document.getElementById('wheel')! as HTMLCanvasElement;
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    for (let i = 0; i < this.segments.length; i++) {
+      const angle = this.startAngle + i * this.arc;
+      this.ctx.fillStyle = this.getColor(i, this.segments.length);
+
+      this.ctx.beginPath();
+      this.ctx.arc(150, 150, outsideRadius, angle, angle + this.arc, false);
+      this.ctx.arc(150, 150, insideRadius, angle + this.arc, angle, true);
+      this.ctx.fill();
+
+      this.ctx.save();
+      this.ctx.fillStyle = 'white';
+      this.ctx.translate(
+        150 + Math.cos(angle + this.arc / 2) * textRadius,
+        150 + Math.sin(angle + this.arc / 2) * textRadius
+      );
+      this.ctx.rotate(angle + this.arc / 2 + Math.PI / 2);
+      const text = this.segments[i];
+      this.ctx.fillText(text, -this.ctx.measureText(text).width / 2, 0);
+      this.ctx.restore();
+    }
+  }
+
+  private getColor(item: number, maxItem: number): string {
+    const hue = (item / maxItem) * 360;
+    return `hsl(${hue}, 100%, 50%)`;
+  }
+
+  spin(): void {
+    this.spinAngleStart = Math.random() * 10 + 10;
+    this.spinTime = 0;
+    this.spinTimeTotal = Math.random() * 3000 + 4000;
+    this.rotateWheel();
+  }
+
+  private rotateWheel(): void {
+    this.spinTime += 30;
+
+    if (this.spinTime >= this.spinTimeTotal) {
+      this.stopRotateWheel();
+      return;
+    }
+
+    const spinAngle =
+      this.spinAngleStart - this.easeOut(this.spinTime, 0, this.spinAngleStart, this.spinTimeTotal);
+    this.startAngle += (spinAngle * Math.PI) / 180;
+    this.drawWheel();
+
+    this.spinTimeout = setTimeout(() => this.rotateWheel(), 30);
+  }
+
+  private stopRotateWheel(): void {
+    clearTimeout(this.spinTimeout);
+    const degrees = (this.startAngle * 180) / Math.PI + 90;
+    const arcd = (this.arc * 180) / Math.PI;
+    const index = Math.floor((360 - (degrees % 360)) / arcd);
+    const winningSegment = this.segments[index];
+    alert(`Gewonnen: ${winningSegment}`);
+  }
+
+  private easeOut(t: number, b: number, c: number, d: number): number {
+    const ts = (t /= d) * t;
+    const tc = ts * t;
+    return b + c * (tc + -3 * ts + 3 * t);
   }
 }
