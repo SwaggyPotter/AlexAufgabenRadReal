@@ -12,7 +12,17 @@
       <!-- Canvas für das Rad -->
       <canvas id="wheel" width="300" height="300"></canvas>
       <!-- Spin-Button -->
-      <button class="spin-button" (click)="spin()">Drehen</button>
+      <button class="spin-button" (click)="spin()" [disabled]="isSpinning">Drehen</button>
+    </div>
+    <!-- Gewinner-Anzeige -->
+    <div class="winner" *ngIf="winner">
+      Gewonnen: <span>{{ winner }}</span>
+    </div>
+    <!-- Dialog für die Entscheidung -->
+    <div class="dialog" *ngIf="showDialog">
+      <p>Möchtest du den Preis <strong>{{ winner }}</strong> annehmen?</p>
+      <button (click)="acceptPrize()">Ja</button>
+      <button (click)="declinePrize()">Nein</button>
     </div>
   </div>
 </ion-content>

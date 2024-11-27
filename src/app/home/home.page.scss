@@ -35,6 +35,18 @@
   /* Über dem Rad anzeigen */
 }
 
+.winner {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #0078d7;
+  text-align: center;
+}
+
+.winner span {
+  color: #ff0000;
+  /* Gewinnerpreis in einer auffälligen Farbe */
+}
 
 
 canvas {
@@ -56,4 +68,44 @@ canvas {
 
 .spin-button:hover {
   background-color: #005bb5;
+}
+
+
+.dialog {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.dialog p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.dialog button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.dialog button:first-child {
+  background-color: #28a745;
+  /* Grün für Akzeptieren */
+  color: white;
+}
+
+.dialog button:last-child {
+  background-color: #dc3545;
+  /* Rot für Ablehnen */
+  color: white;
+}
+
+.dialog button:hover {
+  opacity: 0.9;
 }
