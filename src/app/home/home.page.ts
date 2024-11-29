@@ -176,4 +176,3 @@ export class HomePage implements AfterViewInit {
     return b + c * (tc + -3 * ts + 3 * t);
   }
 }
-
