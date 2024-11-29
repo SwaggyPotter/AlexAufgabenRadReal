@@ -133,3 +133,65 @@ canvas {
   color: green;
   font-size: 18px;
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.wheel-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+
+.pointer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid red;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.spin-button,
+.switch-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.spin-button:disabled,
+.switch-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.passive-missions ul {
+  list-style: none;
+  padding: 0;
+}
+
+.passive-missions li {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.passive-missions li.active {
+  background-color: lightgreen;
+  font-weight: bold;
+}

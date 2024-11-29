@@ -6,33 +6,32 @@
 
 <ion-content [fullscreen]="true">
   <div class="container">
+    <!-- Glücksrad -->
     <div class="wheel-container">
-      <!-- Zeiger -->
       <div class="pointer"></div>
-      <!-- Canvas für das Rad -->
       <canvas id="wheel" width="300" height="300"></canvas>
-      <!-- Spin-Button -->
       <button class="spin-button" (click)="spin()" [disabled]="isSpinning">Drehen</button>
     </div>
-    <!-- Gewinner-Anzeige -->
-    <div class="winner" *ngIf="winner">
-      Gewonnen: <span>{{ winner }}</span>
-    </div>
-    <!-- Preise-Anzeige -->
-    <div class="prizes">
-      <ul>
-        <li *ngFor="let prize of allPrizes">
-          <span>{{ prize.name }}</span>
-          <span *ngIf="prize.taken" class="taken">✔️</span>
-        </li>
-      </ul>
-    </div>
-    <!-- Dialog für die Entscheidung -->
+
+    <!-- Button zum Wechseln der Räder -->
+    <button class="switch-button" (click)="switchWheel()">Wechseln zum anderen Rad</button>
+
+    <!-- Dialog für gewonnene Mission -->
     <div class="dialog" *ngIf="showDialog">
-      <p>Möchtest du den Preis <strong>{{ winner }}</strong> annehmen?</p>
+      <p>Mission bestanden?</p>
+      <strong>{{ winner }}</strong>
       <button (click)="acceptPrize()">Ja</button>
       <button (click)="declinePrize()">Nein</button>
     </div>
-  </div>
 
+    <!-- Liste der passiven Missionen -->
+    <div class="passive-missions">
+      <h3>Passive Missionen</h3>
+      <ul>
+        <li *ngFor="let passive of passiveMissions" [class.active]="passive.title === activePassiveMission">
+          <strong>{{ passive.title }}</strong>: {{ passive.description }}
+        </li>
+      </ul>
+    </div>
+  </div>
 </ion-content>

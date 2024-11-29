@@ -14,20 +14,41 @@ export class HomePage implements AfterViewInit {
   private spinTime: number = 0;
   private spinTimeTotal: number = 0;
 
-  // Preise und Gewinner
-  allPrizes: { name: string; taken: boolean }[] = [
-    { name: 'Preis 1', taken: false },
-    { name: 'Preis 2', taken: false },
-    { name: 'Preis 3', taken: false },
-    { name: 'Preis 4', taken: false },
+  // Rad 1 Missionen
+  missions1: { title: string; description: string; taken: boolean }[] = [
+    { title: 'Verstecke dich', description: 'Bleibe 3 Minuten versteckt, ohne gefunden zu werden. Du hast Max. 5 Minuten Zeit, um dich zu verstecken. Die Sucher tragen einen schwarzen Schleier vor der Maske.', taken: false },
+    { title: 'Flaschenlauf', description: 'Stellt eine Flasche auf den Boden und treffe sie. Schießt du daneben, musst du zur Flasche rennen und sie berühren. Jeder hat einen Schuss frei während des Laufens. Das Spiel endet, wenn die Flasche getroffen wurde.', taken: false },
+    { title: 'Burg Verteidigung', description: 'Verteidige alleine die Burg gegen die Angreifer! Jeder Angreifer hat 30 Schuss. Gewonnen ist das Spiel, wenn du alle Angreifer besiegt hast oder deren Munition alle ist. Du hast so viel Schuss, wie du tragen kannst!', taken: false },
+    { title: 'Befreie die Prinzessin', description: 'In der Burg wurde deine Prinzessin verschleppt. Rette sie um jeden Preis. Die Verteidiger sind halb so viele wie die Angreifer. Stelle dein Team zusammen!', taken: false },
+    { title: 'Duell', description: 'Gewinne ein Duell gegen einen anderen Spieler, den die anderen ausgesucht haben.', taken: false },
+    { title: 'Bunnyhob', description: 'Spiele eine Runde mit zusammengebundenen Beinen.', taken: false },
+    { title: 'Die Dame', description: 'Spiele eine Runde mit deiner Ersatzfrau. Sie darf während der Schlacht nicht getroffen werden.', taken: false },
+    { title: 'Eskorte', description: 'Eskortiere deine Ersatzfrau zum Ausgang der Spielkarte, ohne dass sie getroffen wird oder in Feindeshände gerät.', taken: false },
   ];
-  segments: string[] = this.allPrizes.map(prize => prize.name);
+
+  // Rad 2 Missionen (Optional für den Radwechsel)
+  missions2: { title: string; description: string; taken: boolean }[] = [
+    { title: 'Schütze dein Team', description: 'Beschütze alle deine Teammitglieder vor gegnerischen Treffern.', taken: false },
+    { title: 'Verteidige das Ziel', description: 'Verteidige einen festgelegten Ort auf der Karte für 3 Minuten.', taken: false },
+  ];
+
+  // Passivmissionen
+  passiveMissions: { title: string; description: string }[] = [
+    { title: 'Treuer Begleiter', description: 'Beschütze deinen Hund.' },
+    { title: 'Epischer Tod', description: 'Sterbe einen epischen Tod.' },
+    { title: 'Schlachtruf', description: 'Rufe etwas zum Start der Runde.' },
+  ];
+
+  // Aktuelle Missionsliste
+  currentMissions = this.missions1;
+  segments: string[] = this.currentMissions.map(mission => mission.title);
   arc: number = Math.PI / (this.segments.length / 2);
   winner: string | null = null;
 
   // Zustände
   isSpinning: boolean = false;
   showDialog: boolean = false;
+  activePassiveMission: string | null = null; // Hervorgehobene passive Mission
 
   ngAfterViewInit(): void {
     this.canvas = document.getElementById('wheel') as HTMLCanvasElement;
@@ -50,21 +71,17 @@ export class HomePage implements AfterViewInit {
     const textRadius = 120;
     const insideRadius = 100;
 
-    if (this.canvas && this.ctx) {
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    this.ctx.clearRect(0, 0, this.canvas!.width, this.canvas!.height);
 
     for (let i = 0; i < this.segments.length; i++) {
       const angle = this.startAngle + i * this.arc;
       this.ctx.fillStyle = this.getColor(i, this.segments.length);
 
-      // Außenbereich des Segments zeichnen
       this.ctx.beginPath();
       this.ctx.arc(150, 150, outsideRadius, angle, angle + this.arc, false);
       this.ctx.arc(150, 150, insideRadius, angle + this.arc, angle, true);
       this.ctx.fill();
 
-      // Text zeichnen
       this.ctx.save();
       this.ctx.fillStyle = 'white';
       this.ctx.translate(
@@ -78,14 +95,9 @@ export class HomePage implements AfterViewInit {
     }
   }
 
-  private getColor(item: number, maxItem: number): string {
-    const hue = (item / maxItem) * 360;
-    return `hsl(${hue}, 100%, 50%)`;
-  }
-
   spin(): void {
     if (this.isSpinning) return;
-    this.isSpinning = true; // Drehen starten
+    this.isSpinning = true;
     this.spinAngleStart = Math.random() * 10 + 10;
     this.spinTime = 0;
     this.spinTimeTotal = Math.random() * 3000 + 4000;
@@ -111,36 +123,51 @@ export class HomePage implements AfterViewInit {
   private stopRotateWheel(): void {
     clearTimeout(this.spinTimeout);
 
-    const degrees = (this.startAngle * 180) / Math.PI + 90; // Der Zeiger zeigt auf +90 Grad
+    const degrees = (this.startAngle * 180) / Math.PI + 90;
     const arcd = (this.arc * 180) / Math.PI;
     const index = Math.floor((360 - (degrees % 360)) / arcd) % this.segments.length;
 
-    this.winner = this.segments[index]; // Gewinner setzen
-    this.showDialog = true; // Dialog anzeigen
-    this.isSpinning = false; // Drehen beenden
+    this.winner = this.segments[index];
+    this.showDialog = true;
+    this.isSpinning = false;
+
+    this.highlightPassiveMission(); // Passivmission hervorheben
   }
 
   acceptPrize(): void {
     if (this.winner) {
-      // Gewinner als "genommen" markieren
-      const prize = this.allPrizes.find(prize => prize.name === this.winner);
-      if (prize) prize.taken = true;
+      const mission = this.currentMissions.find(mission => mission.title === this.winner);
+      if (mission) mission.taken = true;
 
-      // Gewinner aus den Segmenten entfernen
       this.segments = this.segments.filter(segment => segment !== this.winner);
-
-      // Winkel pro Segment neu berechnen
       this.arc = Math.PI / (this.segments.length / 2);
 
-      this.winner = null; // Gewinner zurücksetzen
-      this.showDialog = false; // Dialog schließen
-      this.drawWheel(); // Rad neu zeichnen
+      this.winner = null;
+      this.showDialog = false;
+      this.drawWheel();
     }
   }
 
   declinePrize(): void {
-    this.winner = null; // Gewinner zurücksetzen
-    this.showDialog = false; // Dialog schließen
+    this.winner = null;
+    this.showDialog = false;
+  }
+
+  private highlightPassiveMission(): void {
+    const randomIndex = Math.floor(Math.random() * this.passiveMissions.length);
+    this.activePassiveMission = this.passiveMissions[randomIndex].title;
+  }
+
+  switchWheel(): void {
+    this.currentMissions = this.currentMissions === this.missions1 ? this.missions2 : this.missions1;
+    this.segments = this.currentMissions.map(mission => mission.title);
+    this.arc = Math.PI / (this.segments.length / 2);
+    this.drawWheel();
+  }
+
+  private getColor(item: number, maxItem: number): string {
+    const hue = (item / maxItem) * 360;
+    return `hsl(${hue}, 100%, 50%)`;
   }
 
   private easeOut(t: number, b: number, c: number, d: number): number {
@@ -149,3 +176,4 @@ export class HomePage implements AfterViewInit {
     return b + c * (tc + -3 * ts + 3 * t);
   }
 }
+
