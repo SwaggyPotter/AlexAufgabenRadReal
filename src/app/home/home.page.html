@@ -20,6 +20,7 @@
     <div class="dialog" *ngIf="showDialog">
       <p>Mission bestanden?</p>
       <strong>{{ winner }}</strong>
+      <p>{{ winnerDescription }}</p>
       <button (click)="acceptPrize()">Ja</button>
       <button (click)="declinePrize()">Nein</button>
     </div>
@@ -27,6 +28,9 @@
     <!-- Liste der passiven Missionen -->
     <div class="passive-missions">
       <h3>Passive Missionen</h3>
+      <p>Strafen sind immer ein Strafschuss aus allen Läufen oder ein Strafshot
+        Beim Strafschuss ist die mindestentfernung 50m
+      </p>
       <ul>
         <li *ngFor="let passive of passiveMissions" [class.active]="passive.title === activePassiveMission">
           <strong>{{ passive.title }}</strong>: {{ passive.description }}

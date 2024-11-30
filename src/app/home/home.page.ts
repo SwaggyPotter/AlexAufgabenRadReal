@@ -28,8 +28,13 @@ export class HomePage implements AfterViewInit {
 
   // Rad 2 Missionen (Optional für den Radwechsel)
   missions2: { title: string; description: string; taken: boolean }[] = [
-    { title: 'Schütze dein Team', description: 'Beschütze alle deine Teammitglieder vor gegnerischen Treffern.', taken: false },
-    { title: 'Verteidige das Ziel', description: 'Verteidige einen festgelegten Ort auf der Karte für 3 Minuten.', taken: false },
+    { title: 'Fotozeit', description: 'Mache ein Foto mit einem Fremden', taken: false },
+    { title: 'Petetion', description: 'Sammel 5 Unterschriften von Frauen die auf deiner Begleitung unterschreiben', taken: false },
+    { title: 'Wegweiser', description: 'Frage nach dem Weg und gehe dann in die andere Richtung', taken: false },
+    { title: 'Gesangstalent', description: 'Singe mit allen Griechischer Wein die Musik kommt dabei aus dem Handy', taken: false },
+    { title: 'Einen Ausgeben', description: 'Gebe jemand anderen in der Bar ein Glas Milch oder Wasser (ohne Kohlensäure) aus (dieser darf nicht aus der Gruppe sein)', taken: false },
+    { title: 'Wo ist mein Telefon', description: 'Stelle dein Handy auf Laut. Gehe anschließend zu einer Person die dich anrufen soll weil du dein Handy verloren hast. Wenn dein Handy klingelt sage da ist es ja, bedanke dich und gehe', taken: false },
+    { title: 'Alex 2', description: 'Jemanden suchen, der den gleichen Namen hat wie du und ein Foto mit ihm machen', taken: false },
   ];
 
   // Passivmissionen
@@ -44,6 +49,7 @@ export class HomePage implements AfterViewInit {
   segments: string[] = this.currentMissions.map(mission => mission.title);
   arc: number = Math.PI / (this.segments.length / 2);
   winner: string | null = null;
+  winnerDescription: string | null = null; // Beschreibung der gewonnenen Mission
 
   // Zustände
   isSpinning: boolean = false;
@@ -128,6 +134,8 @@ export class HomePage implements AfterViewInit {
     const index = Math.floor((360 - (degrees % 360)) / arcd) % this.segments.length;
 
     this.winner = this.segments[index];
+    const mission = this.currentMissions.find(m => m.title === this.winner);
+    this.winnerDescription = mission?.description || null;
     this.showDialog = true;
     this.isSpinning = false;
 
@@ -143,6 +151,7 @@ export class HomePage implements AfterViewInit {
       this.arc = Math.PI / (this.segments.length / 2);
 
       this.winner = null;
+      this.winnerDescription = null;
       this.showDialog = false;
       this.drawWheel();
     }
@@ -150,6 +159,7 @@ export class HomePage implements AfterViewInit {
 
   declinePrize(): void {
     this.winner = null;
+    this.winnerDescription = null;
     this.showDialog = false;
   }
 
